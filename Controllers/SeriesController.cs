@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using Microsoft.AspNetCore.Http;
 using NetlixRecords.Context;
 using NetlixRecords.Model;
+using System.Collections;
+using System.Linq;
 
 namespace NetlixRecords.Controller
 {
@@ -58,8 +60,38 @@ namespace NetlixRecords.Controller
 
                 throw;
             }
+        }
 
+        [HttpGet("[action]")]
+        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client)]
+        public IQueryable<Series> GetAllTheShows([FromQuery] string sort, [FromQuery] int pageNumber, int Pagesize)
+        {
+            IQueryable<Series> data = Enumerable.Empty<Series>().AsQueryable();
+            switch (sort.ToLower()) 
+            {
 
+                case "asc" : data =  _dbContext.Series.Select(x => x).OrderBy(x => x.ReleaseDate);
+                    break;
+                case "desc": data =  _dbContext.Series.Select(x => x).OrderByDescending(x => x.ReleaseDate);
+                    break;
+                default: data = _dbContext.Series.Select(x => x);
+                    break;
+            }
+            return Pagination(data, pageNumber, Pagesize);
+        }
+
+        [NonAction]
+        public IQueryable<Series> Pagination(IQueryable<Series> series,int PageNumber, int Pagesize)
+        {
+            if(PageNumber < 1)
+            {
+                PageNumber = 1;
+            }
+            if(Pagesize == 0)
+            {
+                Pagesize = 20;
+            }
+            return series.Skip((PageNumber - 1) * Pagesize).Take(Pagesize);
         }
     }
 }

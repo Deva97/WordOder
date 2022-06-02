@@ -29,6 +29,7 @@ namespace NetlixRecords
             });
             services.AddDbContext<SeriesDbContext>(option => option.UseSqlServer("Data Source=localhost;Initial Catalog=netflix;Integrated Security=True; Trusted_Connection = true;"));
             services.AddControllers();
+            services.AddResponseCaching();
 
         }
 
@@ -53,7 +54,7 @@ namespace NetlixRecords
             {
                 endpoints.MapControllers();
             });
-
+            app.UseResponseCaching();
             seriesDbContext.Database.EnsureCreated();
         }
     }

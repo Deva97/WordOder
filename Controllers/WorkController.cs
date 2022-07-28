@@ -4,8 +4,6 @@ using System.Collections.Generic;
 using WorkOrder.Context;
 using WorkOrder.Model;
 using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
 
 namespace WorkOrder.Controller
 {
@@ -49,15 +47,45 @@ namespace WorkOrder.Controller
                 return NotFound("Technician id not found");
         }
         [HttpPost]
-        public void Post()
+        public ActionResult<string> CreateWorkOrder([FromBody] AddWorkCommand request)
         {
-
+            try
+            {
+                var work = new Work() { Address = request.Address, InterventionTime = request.time };
+                _dbContext.Works.Add(work);
+                _dbContext.SaveChanges();
+                return $"WorkOrder is created with ID : {work.WorkOrderId}";
+            }
+            catch (Exception e)
+            {
+                return $"Exception occured : {e.StackTrace}";
+            }
         }
 
         // PUT api/<ValuesController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpDelete("{id}")]
+        public ActionResult<string> Put(Guid id)
         {
+            try
+            {
+
+                var workId = _dbContext.Works.FirstOrDefault(x => x.WorkOrderId.Equals(id.ToString()));
+                if(workId is not null)
+                {
+                    _dbContext.Remove(workId);
+                    _dbContext.SaveChanges();
+                    return $"WorkOrder with ID {id} is deleted";
+                }
+                else
+                {
+                    return "Work id doesnt exist";
+                }
+                
+            }
+            catch (Exception e)
+            {
+                return $"Work Order deletion failed: {e}";
+            }
         }
 
         // DELETE api/<ValuesController>/5

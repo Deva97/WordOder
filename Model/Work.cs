@@ -9,6 +9,7 @@ namespace WorkOrder.Model
 {
     public class Work
     {
+
         [Key]
         public string WorkOrderId { get; set; } = System.Guid.NewGuid().ToString();
         public string Address { get; set; }

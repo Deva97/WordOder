@@ -62,14 +62,24 @@ namespace WorkOrder.Controllers
             {
                 return StatusCode(404, "Technician not exist");
             }
+            if (!tech.IsActive)
+            {
+                return StatusCode(404, "the technician is not active");
+            }
             var work = _dbContext.Works.FirstOrDefault(x => x.WorkOrderId.Equals(request.WorkId));
             if(work is null)
             {
                 return StatusCode(404, "workOrder doesnt exist");
             }
-            var assigntech = new WorkBoard() { TechnicianId = request.TechnicianId, JobId = request.WorkId, IsWorkDone = false, IsWorkOrderActive = true };
+            var isWorkAssigned = _dbContext.WorkBoards.Where(x => x.WorkId.Equals(request.WorkId));
             try
             {
+                if (isWorkAssigned is not null)
+                {
+                    _dbContext.Remove(isWorkAssigned);
+                    _dbContext.SaveChanges();
+                }
+                var assigntech = new WorkBoard() { TechnicianId = request.TechnicianId, JobId = request.WorkId, IsWorkDone = false, IsWorkOrderActive = true };
                 _dbContext.Add(assigntech);
                 _dbContext.SaveChanges();
                 return Ok("Technician is assigned");

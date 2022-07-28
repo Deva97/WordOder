@@ -1,33 +1,53 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using Microsoft.AspNetCore.Http;
 using WorkOrder.Context;
 using WorkOrder.Model;
-using System.Collections;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Collections.Generic;
 
 namespace WorkOrder.Controller
 {
-    [Route("api/[controller]")]
+    [Route("api/[controller]/[action]")]
     [ApiController]
     public class WorkController : ControllerBase
     {
         private readonly WorkDbContext _dbContext;
         public WorkController(WorkDbContext dbContext)
         {
-            _dbContext = dbContext;;
+            _dbContext = dbContext;
         }
-        // GET api/<ValuesController>/5
-        //[HttpGet("{id}")]
-        //public Series Get(Guid id)
-        //{
-        //    var series = _dbContext.Series.Find(id);
-        //    return series;
-        //}
 
-        // POST api/<ValuesController>
+        [HttpGet("{date}")]
+        public ActionResult<List<Work>> GetAllWorkOrderByDate(DateTime date)
+        {
+            var work = _dbContext.Works.Where(x => x.InterventionTime.Date.Equals(date.Date)).ToList();
+            if (work is null)
+            {
+                return NoContent();
+            }
+            else
+                return Ok(work);
+        }
+        [HttpGet("{id}")]
+        public ActionResult<List<Work>> GetWorkOrderbyTechnicianId(Guid id)
+        {
+            var technician = _dbContext.Technicians.FirstOrDefault(x => x.TechnicianId == id.ToString());
+            if (technician is not null)
+            {
+                var orderIdList = _dbContext.WorkBoards.Where(x => x.TechnicianId.Equals(id.ToString())).Select(x => x.WorkId).ToList();
+                var work = _dbContext.Works.Where(x => orderIdList.Contains(x.WorkOrderId)).ToList();
+                if (work is null)
+                {
+                    return NoContent();
+                }
+                else
+                    return Ok(work);
+            }
+            else
+                return NotFound("Technician id not found");
+        }
         [HttpPost]
         public void Post()
         {
@@ -42,20 +62,13 @@ namespace WorkOrder.Controller
 
         // DELETE api/<ValuesController>/5
         [HttpDelete("{id}")]
-        public IActionResult Delete(int id)
+        public void Delete(int id)
         {
            
         }
 
-        [HttpGet("[action]")]
-        [ResponseCache(Duration = 60, Location = ResponseCacheLocation.Client)]
-        public IQueryable<Series> GetAllTheShows([FromQuery] string sort, [FromQuery] int pageNumber, int Pagesize)
-        {
-         
-        }
-
         [NonAction]
-        public IQueryable<Series> Pagination(IQueryable<Series> series,int PageNumber, int Pagesize)
+        public IQueryable Pagination<T>(IQueryable<T> QueryList, int PageNumber, int Pagesize)
         {
             if(PageNumber < 1)
             {
@@ -65,12 +78,7 @@ namespace WorkOrder.Controller
             {
                 Pagesize = 20;
             }
-            return series.Skip((PageNumber - 1) * Pagesize).Take(Pagesize);
-        }
-
-        [HttpGet]
-        public async Task<IActionResult> Get()
-        {
+            return QueryList.Skip((PageNumber - 1) * Pagesize).Take(Pagesize);
         }
     }
 }

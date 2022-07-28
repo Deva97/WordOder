@@ -24,9 +24,8 @@ namespace WorkOrder.Context
                 HasOne<Technician>(p => p.Technician).
                 WithMany(b => b.WorkBoardsTechnicainDetails).HasForeignKey(f => f.TechnicianId);
 
-
-                
         }
+
         public DbSet<Technician> Technicians { get; set; }
         public DbSet<Work> Works { get; set; }
         public DbSet<WorkBoard> WorkBoards { get; set; }

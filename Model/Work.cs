@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -10,23 +11,10 @@ namespace WorkOrder.Model
     {
         [Key]
         public string WorkOrderId { get; set; } = System.Guid.NewGuid().ToString();
-        public Address Address { get; set; }
+        public string Address { get; set; }
         public DateTime InterventionTime { get; set; }
 
         public virtual ICollection<WorkBoard> WorkBoardsWorkDetails { get; set; }
     }
 
-    public class Address
-    {
-        [Required]
-        public string? LineOne { get; set; }
-        public string LineTwo { get; set; }
-        [Required]
-        public string State { get; set; }
-        [Required]
-        public string District { get; set; }
-        [Key]
-        public string Pincode { get; set; }
-        public string? LandMark { get; set; }
-    }
 }

@@ -3,26 +3,10 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace WorkOrder.Migrations
 {
-    public partial class AddTablesWorkBoard : Migration
+    public partial class firstMigration : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.CreateTable(
-                name: "Address",
-                columns: table => new
-                {
-                    Pincode = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    LineOne = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LineTwo = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    State = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    District = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LandMark = table.Column<string>(type: "nvarchar(max)", nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Address", x => x.Pincode);
-                });
-
             migrationBuilder.CreateTable(
                 name: "Technicians",
                 columns: table => new
@@ -42,18 +26,12 @@ namespace WorkOrder.Migrations
                 columns: table => new
                 {
                     WorkOrderId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    AddressPincode = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    Address = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     InterventionTime = table.Column<DateTime>(type: "datetime2", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Works", x => x.WorkOrderId);
-                    table.ForeignKey(
-                        name: "FK_Works_Address_AddressPincode",
-                        column: x => x.AddressPincode,
-                        principalTable: "Address",
-                        principalColumn: "Pincode",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -93,11 +71,6 @@ namespace WorkOrder.Migrations
                 name: "IX_WorkBoards_WorkId",
                 table: "WorkBoards",
                 column: "WorkId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Works_AddressPincode",
-                table: "Works",
-                column: "AddressPincode");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -110,9 +83,6 @@ namespace WorkOrder.Migrations
 
             migrationBuilder.DropTable(
                 name: "Works");
-
-            migrationBuilder.DropTable(
-                name: "Address");
         }
     }
 }

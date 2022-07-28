@@ -19,34 +19,6 @@ namespace WorkOrder.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("ProductVersion", "5.0.0");
 
-            modelBuilder.Entity("WorkOrder.Model.Address", b =>
-                {
-                    b.Property<string>("Pincode")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.Property<string>("District")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LandMark")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LineOne")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("LineTwo")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("State")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.HasKey("Pincode");
-
-                    b.ToTable("Address");
-                });
-
             modelBuilder.Entity("WorkOrder.Model.Technician", b =>
                 {
                     b.Property<string>("TechnicianId")
@@ -71,15 +43,13 @@ namespace WorkOrder.Migrations
                     b.Property<string>("WorkOrderId")
                         .HasColumnType("nvarchar(450)");
 
-                    b.Property<string>("AddressPincode")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<string>("Address")
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime>("InterventionTime")
                         .HasColumnType("datetime2");
 
                     b.HasKey("WorkOrderId");
-
-                    b.HasIndex("AddressPincode");
 
                     b.ToTable("Works");
                 });
@@ -111,15 +81,6 @@ namespace WorkOrder.Migrations
                     b.HasIndex("WorkId");
 
                     b.ToTable("WorkBoards");
-                });
-
-            modelBuilder.Entity("WorkOrder.Model.Work", b =>
-                {
-                    b.HasOne("WorkOrder.Model.Address", "Address")
-                        .WithMany()
-                        .HasForeignKey("AddressPincode");
-
-                    b.Navigation("Address");
                 });
 
             modelBuilder.Entity("WorkOrder.Model.WorkBoard", b =>

@@ -17,8 +17,8 @@ namespace WorkOrder.Controller
             _dbContext = dbContext;
         }
 
-        [HttpGet("{date}")]
-        public ActionResult<List<Work>> GetAllWorkOrderByDate(DateTime date)
+        [HttpGet]
+        public ActionResult<List<Work>> GetAllWorkOrderByDate([FromQuery]DateTime date)
         {
             var work = _dbContext.Works.Where(x => x.InterventionTime.Date.Equals(date.Date)).ToList();
             if (work is null)
@@ -54,17 +54,16 @@ namespace WorkOrder.Controller
                 var work = new Work() { Address = request.Address, InterventionTime = request.time };
                 _dbContext.Works.Add(work);
                 _dbContext.SaveChanges();
-                return $"WorkOrder is created with ID : {work.WorkOrderId}";
+                return Ok($"WorkOrder is created with ID : {work.WorkOrderId}");
             }
             catch (Exception e)
             {
-                return $"Exception occured : {e.StackTrace}";
+                return StatusCode(500,$"Exception occured : {e.StackTrace}");
             }
         }
 
-        // PUT api/<ValuesController>/5
         [HttpDelete("{id}")]
-        public ActionResult<string> Put(Guid id)
+        public ActionResult<string> RemoveWorkOrder(Guid id)
         {
             try
             {
@@ -74,27 +73,19 @@ namespace WorkOrder.Controller
                 {
                     _dbContext.Remove(workId);
                     _dbContext.SaveChanges();
-                    return $"WorkOrder with ID {id} is deleted";
+                    return Ok($"WorkOrder with ID {id} is deleted");
                 }
                 else
                 {
-                    return "Work id doesnt exist";
+                    return StatusCode(404,"Work id doesnt exist");
                 }
                 
             }
             catch (Exception e)
             {
-                return $"Work Order deletion failed: {e}";
+                return StatusCode(500,$"Work Order deletion failed: {e}");
             }
         }
-
-        // DELETE api/<ValuesController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
-        {
-           
-        }
-
         [NonAction]
         public IQueryable Pagination<T>(IQueryable<T> QueryList, int PageNumber, int Pagesize)
         {
